@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru"
+>
+<head>
+    <title>Скрипт для автоматического заполнения таблицы geo_target LiveStreet CMS - Stanislav Fateev's blog</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/skript-dlya-avtomaticheskogo-zapolneniya-tablitsy-geo_target-livestreet-cms.html">
+
+        <meta name="author" content="svfat" />
+        <meta name="description" content="Однажды мне понадобилось обработать список юзеров и отфильтровать по их по географическому местоположению. В процессе я столкнулся с тем, что из \~450 юзеров информация о географическом положении заполнена лишь у 16-ти. И я решил сделать скрипт, который бы на основании IP с которым юзер регистрировался, получал данные о географическом положении ..." />
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Stanislav Fateev's blog            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/avto.html">Авто</a>
+                        </li>
+                        <li class="active">
+                            <a href="/category/bez-rubriki.html">Без рубрики</a>
+                        </li>
+                        <li >
+                            <a href="/category/server.html">Сервер</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/skript-dlya-avtomaticheskogo-zapolneniya-tablitsy-geo_target-livestreet-cms.html"
+                       rel="bookmark"
+                       title="Permalink to Скрипт для автоматического заполнения таблицы geo_target LiveStreet CMS">
+                        Скрипт для автоматического заполнения таблицы geo_target LiveStreet CMS
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2014-05-22T17:27:00+04:00"> Чт. 22 Май 2014</time>
+    </span>
+
+
+
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>Однажды мне понадобилось обработать список юзеров и отфильтровать по их
+по географическому местоположению. В процессе я столкнулся с тем, что из
+\~450 юзеров информация о географическом положении заполнена лишь у
+16-ти. И я решил сделать скрипт, который бы на основании IP с которым
+юзер регистрировался, получал данные о географическом положении, и
+заполнял эти данные.<!--more--></p>
+<p>Для осуществления этого я использовал один из общедоступных сервисов
+<a href="sypexgeo.net">sypexgeo.net</a></p>
+<p>Скрипт решил писать на python, так как владею им получше чем php,
+поэтому запускать его нужно из командной строки.</p>
+<p>Одной из проблем является не точное соответствие названий получаемых от
+API сервиса, и названий в таблицах geo* livestreet например
+(Dnepropetrovsk и Dnipropetrovsk, Moskva и Moscow &amp; Moscow region и
+тысячи других несоответствий), поэтому я сделал словарь синонимов,
+который заполняется при работе скрипта, именно поэтому скрипт требует
+участия человека при работе. Натолкнувший на неизвестный ему
+географический объект, скрипт спросит у вас синоним этого названия из
+базы livestreet (список отсортирован эвристически, и зачастую (но не
+обязательно) самый последний элемент является верным синонимом) В
+дальнейшем, скрипт будет использовать этот синоним, сохранив его в базе,
+то есть ввести его предстоит только один раз)</p>
+<p>Скорее всего словарь синонимов (ls-geo.dat) после того как скрипт
+отработает пополнится, если вам будет не сложно, можете прислать его мне
+для обновления исходного словаря.</p>
+<p>Итак, ссылка на исходники на Гитхабе:
+<a href="https://github.com/svfat/ls-geofiller">https://github.com/svfat/ls-geofiller</a></p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3 well well-sm" id="sidebar">
+
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+
+
+
+                <li class="list-group-item"><a href="/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                    <ul class="list-group " id="tags">
+                        <li class="list-group-item tag-4">
+                            <a href="/tag/honda.html">
+                                honda
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="/tag/diy.html">
+                                diy
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="/tag/zamok.html">
+                                замок
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="/tag/remont.html">
+                                ремонт
+                            </a>
+                        </li>
+                    </ul>
+                </li>    
+    <li class="list-group-item"><h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://github.com/svfat/" target="_blank">
+                Мой аккаунт на GitHub
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        </ul>
+    </section>
+
+</aside>        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2014 Stanislav Fateev
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+</body>
+</html>

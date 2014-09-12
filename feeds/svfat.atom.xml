@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Stanislav Fateev's blog</title><link href="/" rel="alternate"></link><link href="/feeds/svfat.atom.xml" rel="self"></link><id>/</id><updated>2014-05-22T17:27:00+04:00</updated><entry><title>Скрипт для автоматического заполнения таблицы geo_target LiveStreet CMS</title><link href="/skript-dlya-avtomaticheskogo-zapolneniya-tablitsy-geo_target-livestreet-cms.html" rel="alternate"></link><updated>2014-05-22T17:27:00+04:00</updated><author><name>svfat</name></author><id>tag:,2014-05-22:skript-dlya-avtomaticheskogo-zapolneniya-tablitsy-geo_target-livestreet-cms.html</id><summary type="html">&lt;p&gt;Однажды мне понадобилось обработать список юзеров и отфильтровать по их
+по географическому местоположению. В процессе я столкнулся с тем, что из
+\~450 юзеров информация о географическом положении заполнена лишь у
+16-ти. И я решил сделать скрипт, который бы на основании IP с которым
+юзер регистрировался, получал данные о географическом положении, и
+заполнял эти данные.&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;Для осуществления этого я использовал один из общедоступных сервисов
+&lt;a href="sypexgeo.net"&gt;sypexgeo.net&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Скрипт решил писать на python, так как владею им получше чем php,
+поэтому запускать его нужно из командной строки.&lt;/p&gt;
+&lt;p&gt;Одной из проблем является не точное соответствие названий получаемых от
+API сервиса, и названий в таблицах geo* livestreet например
+(Dnepropetrovsk и Dnipropetrovsk, Moskva и Moscow &amp;amp; Moscow region и
+тысячи других несоответствий), поэтому я сделал словарь синонимов,
+который заполняется при работе скрипта, именно поэтому скрипт требует
+участия человека при работе. Натолкнувший на неизвестный ему
+географический объект, скрипт спросит у вас синоним этого названия из
+базы livestreet (список отсортирован эвристически, и зачастую (но не
+обязательно) самый последний элемент является верным синонимом) В
+дальнейшем, скрипт будет использовать этот синоним, сохранив его в базе,
+то есть ввести его предстоит только один раз)&lt;/p&gt;
+&lt;p&gt;Скорее всего словарь синонимов (ls-geo.dat) после того как скрипт
+отработает пополнится, если вам будет не сложно, можете прислать его мне
+для обновления исходного словаря.&lt;/p&gt;
+&lt;p&gt;Итак, ссылка на исходники на Гитхабе:
+&lt;a href="https://github.com/svfat/ls-geofiller"&gt;https://github.com/svfat/ls-geofiller&lt;/a&gt;&lt;/p&gt;</summary></entry><entry><title>Ремонт центрального замка Honda CRV-II своими руками</title><link href="/remont-tsentral-nogo-zamka-honda-crv-ii-svoimi-rukami.html" rel="alternate"></link><updated>2014-05-07T11:28:00+04:00</updated><author><name>svfat</name></author><id>tag:,2014-05-07:remont-tsentral-nogo-zamka-honda-crv-ii-svoimi-rukami.html</id><summary type="html">&lt;p&gt;Я являюсь обладателем авто Honda CRV-II 2003 г.в. И в немолодом
+автомобиле зачастую возникают различные мелкие технические неполадки.
+Так, стал глючить центральный замок, а именно: при закрывании его с
+брелка сигнализации, кнопки блокировки дверей опускались и сразу же
+поднимались - автомобиль оставался открытым. Понаблюдав за поведением
+кнопок, я пришел в выводу, что главному замку (который находится в
+водительской двери) как-бы не хватает силы защелкнуться до конца, и он
+возвращается в открытое положение, подавая сигнал остальным замкам также
+открыться. Через некоторое время ситуация ухудшилась - двери перестали
+открываться, так как главному замку уже перестало хватать сил поднять
+кнопку блокировки. При этом если опускать и поднимать главную кнопку
+блокировки вручную - все работало нормально. Стало очевидно, что есть
+как минимум три варианта решения проблемы:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;замена узла блокировка водительской двери;&lt;/li&gt;
+&lt;li&gt;ремонт и чистка его;&lt;/li&gt;
+&lt;li&gt;"протезирование" с помощью дополнительного электрического актуатора.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!--more--&gt;
+
+&lt;p&gt;Первый вариант не подходил по причине стоимости - цена новой детали была
+около 3500-4500 рублей. Второй также не подошел, потому что доблестные
+японцы такие узлы делают практически не разборными, и все обслуживание
+производится на свой страх и риск. Сколько потом прослужит
+отремонтированная таким образом деталь - также непонятно. Я просто
+побоялся остаться вообще без замка на двери. Итак я приступил к
+реализации третьего варианта, идея была такой: установить рядом с
+основным замком включающийся параллельно с ним дополнительный актуатор
+дверей автомобиля, который будет толкать и тянуть кнопку блокировки.&lt;/p&gt;
+&lt;p&gt;Для этого ремонта мне понадобилось:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;плоская отвертка;&lt;/li&gt;
+&lt;li&gt;крестовая отвертка;&lt;/li&gt;
+&lt;li&gt;гаечный ключ;&lt;/li&gt;
+&lt;li&gt;нож;&lt;/li&gt;
+&lt;li&gt;дрель со сверлом по металлу;&lt;/li&gt;
+&lt;li&gt;актуатор двери с двумя проводами и комплектом крепежа (покупается в
+    "автозапчастях", стоит около 150 р.);&lt;/li&gt;
+&lt;li&gt;клипсы дверной обшивки от отечественного автопрома (покупаются там
+    же, стоимость около 50 р. за большой пакет, необходимы, чтобы
+    поставить обшивку на место, так как родные скорее всего поломаются)&lt;/li&gt;
+&lt;li&gt;два болта с шайбами и гайками (тоже бывают в "автозапчастях", стоят
+    копейки).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Приступаем к разборке водительской двери:&lt;/p&gt;
+&lt;p&gt;Опускаем стекло двери до конца, и плоской отверткой отколупываем
+пластиковую крышечку под ручкой открывания двери (изнутри разумеется):  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9491/96185066.f/0_d00b1_ae33be5d_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Затем крестовой отверткой откручиваем два винта под ней:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.f/0_d00b2_fd6faebc_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Вытягиваем ручку на себя и видим металлическую тягу, толкая крепление
+той же отверткой, снимаем ручку с тяги:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.f/0_d00b3_797ab40e_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Выкручиваем винт на обшивке в углу под большой ручкой:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9491/96185066.f/0_d00b5_2ea57261_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Выкручиваем такой же винт с противоположной стороны (на фото его не
+видно, но он там есть):  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.f/0_d00b4_59397a64_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Аккуратно отгибая плоской отверткой по периметру защелки блока
+управления, вытягиваем его вверх:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.f/0_d00b6_cb5c9405_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;И снимаем клеммы (нажимая на защелки клемм отверткой):  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.f/0_d00b7_160d0814_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Обшивка двери теперь держится только на клипсах. Снимаем пластиковый
+треугольник у зеркала, просто потянув на себя, вытягиваем обшивку из
+щели, куда опускается стекло. и начинаем отковыривать обшивку двери,
+помогая отверткой - усилие иногда может требоваться довольно большое и
+клипсы ломаются. Говорят, что существует специальный съемник, но к
+сожалению в наличии у меня его не было. Поэтому я запасся клипсами от
+Лады Калины или Приоры, которые подошли как родные. Сняв полностью
+обшивку - не забудьте снять еще одну клемму, идущую к кнопке открывания
+стекла багажника.&lt;/p&gt;
+&lt;p&gt;В итоге вам должен открыться такой вид:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.f/0_d00b8_5dd85d7e_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Пылезащита держится на липкой мастике, и ее легко снимать и ставить на
+место, гораздо сложнее при этом не перепачкаться:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.f/0_d00b9_4f6ae1cf_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Нам необходимо закрепить наш актуатор на двери, как правило в комплекте
+с ним идет такая специальная планочка, которую мы прикрутим к двери
+болтами. Для этого нам потребуется просверлить одно отверстие, так как
+для в качестве второй точки крепления подойдет уже готовое отверстие от
+клипсы удерживающей жгут проводов замка двери:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.f/0_d00ba_7c5b1684_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Выдергиваем клипсу из отверстия и прикручиваем планку:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9491/96185066.f/0_d00bb_851310cb_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Устанавливаем актуатор:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9491/96185066.f/0_d00bc_9bb34d42_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Отключаем клемму замка, на которую подходит два провода, и эмпирическим
+методом сопоставляем их с проводами нового актуатора, добиваясь
+правильной работы (при подаче сигнала на открытие - актуатор дергается
+вверх, удлиняясь, на закрытие - сокращается. Зачищаем провода,
+скручиваем и изолируем.Возвращаем клемму на место:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.f/0_d00bd_fb1ff8d3_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Подгибая тягу актуатора, добиваемся максимально параллельного ее
+положения относительно тяги кнопки блокировки двери, и прикручиваем ее
+крепежом из комплекта:  &lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://img-fotki.yandex.ru/get/9822/96185066.10/0_d00be_a243150_L.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Проверяем работу системы, убеждаемся что все работает и собираем дверь в
+обратном порядке. На этом все. Думаю, такого ремонта хватит надолго.&lt;/p&gt;
+&lt;p&gt;Видео работы замка с дополнительным актуатором:  &lt;/p&gt;
+&lt;iframe width="560" height="315" src="//www.youtube.com/embed/nzZaYGpBB7I?rel=0" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;</summary><category term="diy"></category><category term="honda"></category><category term="замок"></category><category term="ремонт"></category></entry><entry><title>Мой "велосипед" для бэкапа веб-сервера</title><link href="/moj-velosiped-dlya-be-kapa-veb-servera.html" rel="alternate"></link><updated>2014-04-29T13:45:00+04:00</updated><author><name>svfat</name></author><id>tag:,2014-04-29:moj-velosiped-dlya-be-kapa-veb-servera.html</id><summary type="html">&lt;p&gt;Мне было лениво было разбираться с специальным софтом для бэкапа типа
+backula, amanda и т.д., и я написал этот небольшой bash-скрипт,
+незатейливо названный мною "packub", для инкрементального бэкапа файлов
+и баз данных сайтов, созданных в ISPConfig 3, в дополнение к имеющейся
+системе бэкапа этой панели управления.  Конечно, данный скрипт может
+быть настроен для бэкапа сайтов созданных с помощью других панелей, или
+вовсе без них. Единственным условием является однообразие структуры
+директорий каждого сайта. То есть, все сайты находятся, например, в
+/var/www, для каждого сайта создана поддиректория вида example.com,
+файлы сайта в поддиректории example.com/web. Но, даже если это и не так,
+то этого можно легко добиться с помощью симлинков)&lt;br /&gt;
+&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;В своей работе скрипт использует утилиту rdiff-backup для формирования
+собственно инкрементальных бэкапов. И, по-сути, данный скрипт является
+оболочкой на ним, заставляя обрабатывать директории, указанные нами для
+бэкапа, а также делая дампы баз данных.&lt;/p&gt;
+&lt;p&gt;Итак, вот такой вот код, его актуальная версия также лежит здесь
+&lt;a href="https://github.com/svfat/packub"&gt;https://github.com/svfat/packub&lt;/a&gt;:&lt;/p&gt;
+&lt;p&gt;~~~~ {lang="sh"}&lt;/p&gt;
+&lt;h1&gt;!/bin/bash&lt;/h1&gt;
+&lt;h1&gt;&lt;/h1&gt;
+&lt;h1&gt;packub - bash script for backing up websites and databases&lt;/h1&gt;
+&lt;h1&gt;Author: Stanislav Fateev, 2014&lt;/h1&gt;
+&lt;h1&gt;Email: fateevstas@yandex.ru&lt;/h1&gt;
+&lt;h1&gt;WWW: svfat.ru&lt;/h1&gt;
+&lt;h1&gt;&lt;/h1&gt;
+&lt;h1&gt;requires bash version&amp;gt;=4 and rdiff-backup to run&lt;/h1&gt;
+&lt;h1&gt;strongly recommended to run with superuser rights&lt;/h1&gt;
+&lt;h1&gt;mysql user credentials&lt;/h1&gt;
+&lt;p&gt;DBLOGIN="root"
+DBPASSWORD="&lt;strong&gt;&lt;em&gt;*&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;*&lt;/em&gt;&lt;/strong&gt;****"&lt;/p&gt;
+&lt;h1&gt;directories (don't forget about slashes)&lt;/h1&gt;
+&lt;p&gt;BACKUP_TO="/home/user/backup/"
+DIR_PREFIX="/var/www/"
+DIR_POSTFIX="/web/"&lt;/p&gt;
+&lt;h1&gt;declaring bash associative array as key:value pairs 'site':'database'&lt;/h1&gt;
+&lt;p&gt;declare -A aa&lt;/p&gt;
+&lt;h1&gt;edit this&lt;/h1&gt;
+&lt;p&gt;aa['yandex.ru']='yandex_database'
+aa['google.com']='db_google'&lt;/p&gt;
+&lt;h1&gt;end of declaration&lt;/h1&gt;
+&lt;h1&gt;test enviroment&lt;/h1&gt;
+&lt;p&gt;if [ ! ${BASH_VERSION%%[^0-9]*} -ge 4 ];
+then
+echo &amp;gt;&amp;amp;2 "I require bash version&amp;gt;=4 but it's not installed. Aborting."
+exit 1
+fi&lt;/p&gt;
+&lt;p&gt;command -v rdiff-backup &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 || { echo &amp;gt;&amp;amp;2 "I require rdiff-backup but it's not installed. Aborting."; exit 1; }&lt;/p&gt;
+&lt;h1&gt;check if backup directory is exists&lt;/h1&gt;
+&lt;p&gt;if [ ! -d "$BACKUP_TO" ]; then
+mkdir $BACKUP_TO
+echo "Created directory $BACKUP_TO"
+fi&lt;/p&gt;
+&lt;p&gt;for site in "${!aa[@]}"
+do
+OUTPUT_DIR=$BACKUP_TO$site
+INPUT_DIR=$DIR_PREFIX$site$DIR_POSTFIX
+LOGFILE=$OUTPUT_DIR/$site.log&lt;/p&gt;
+&lt;h1&gt;check if directory we want to backup is exists&lt;/h1&gt;
+&lt;p&gt;if [ -d "$INPUT_DIR" ]; then&lt;/p&gt;
+&lt;h1&gt;check if output directory is exists - if not, create it&lt;/h1&gt;
+&lt;p&gt;if [ ! -d "$OUTPUT_DIR" ]; then
+mkdir $OUTPUT_DIR
+echo "Created directory $OUTPUT_DIR" | tee -a $LOGFILE
+fi&lt;/p&gt;
+&lt;h1&gt;make incremental backup and log&lt;/h1&gt;
+&lt;p&gt;echo $'\n\n' &amp;gt;&amp;gt; $LOGFILE
+echo "Starting backup for $site. Wait please." | tee -a $LOGFILE
+database=${aa[$site]}
+databasefile=$INPUT_DIR$database.sql
+echo "Dumping database in $databasefile" | tee -a $LOGFILE
+mysqldump -u$DBLOGIN -p$DBPASSWORD $database -v --single-transaction 2&amp;gt;&amp;amp;1 1&amp;gt;$databasefile | tee -a $LOGFILE
+rdiff-backup --print-statistics $INPUT_DIR $OUTPUT_DIR$DIR_POSTFIX 2&amp;gt;&amp;amp;1 | tee -a $LOGFILE
+else&lt;/p&gt;
+&lt;h1&gt;no input directory&lt;/h1&gt;
+&lt;p&gt;echo "Directory $INPUT_DIR not found. Skipping."
+fi
+done
+~~~~&lt;/p&gt;
+&lt;p&gt;Для правильной работы, замените пароль к руту mysql в переменной
+DBPASSWORD, имена директорий в переменных BACKUP_TO, DIR_PREFIX,
+DIR_POSTFIX, и настройте массив aa добавив строки вида
+aa['example.com']='db_example', где example.com имя директории где
+находятся файлы сайта, то есть, то что между DIR_PREFIX и DIR_POSTFIX,
+а db_example - имя используемой базы данных. В моей системе BACKUP_TO
+настроен на папку дропбокса - таким образом бэкапы автоматически
+заливаются в облако.&lt;/p&gt;
+&lt;p&gt;Устанавливаем &lt;a href="http://www.nongnu.org/rdiff-backup/"&gt;rdiff-backup&lt;/a&gt; любым
+способом, подходящим для вашей системы.&lt;br /&gt;
+Кидаем этот скрипт например в \~/bin/packub.sh (Помните, что в нем в
+открытом виде храниться пароль от рута mysql, и следует владельцем файла
+сделать пользователя root, поставив затем права доступа типа 700)&lt;/p&gt;
+&lt;p&gt;После запуска, если все пройдет нормально, должны создаться необходимые
+директории в которые забэкапятся файлы с базами. Также в каждой
+директории должен быть создан log-файл с кратким отчетом.&lt;/p&gt;
+&lt;p&gt;Я засунул этот скрипт в cron, и как я уже указал выше, настроил его на
+папку дропбокса. Теперь в мой дропбокс еженощно валятся инкрементальные
+бэкапы, успокаивая мою нервную систему.&lt;/p&gt;
+&lt;p&gt;Возможо кому-нибудь мои наработки пригодятся, буду рад комментариям,
+форкам и pull-реквестам.&lt;/p&gt;</summary></entry></feed>

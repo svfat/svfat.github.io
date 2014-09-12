@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ru"
+>
+<head>
+    <title>Мой "велосипед" для бэкапа веб-сервера - Stanislav Fateev's blog</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/moj-velosiped-dlya-be-kapa-veb-servera.html">
+
+        <meta name="author" content="svfat" />
+        <meta name="description" content="Мне было лениво было разбираться с специальным софтом для бэкапа типа backula, amanda и т.д., и я написал этот небольшой bash-скрипт, незатейливо названный мною &#34;packub&#34;, для инкрементального бэкапа файлов и баз данных сайтов, созданных в ISPConfig 3, в дополнение к имеющейся системе бэкапа этой панели управления. Конечно, данный скрипт ..." />
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Stanislav Fateev's blog            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="/category/avto.html">Авто</a>
+                        </li>
+                        <li >
+                            <a href="/category/bez-rubriki.html">Без рубрики</a>
+                        </li>
+                        <li class="active">
+                            <a href="/category/server.html">Сервер</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="/moj-velosiped-dlya-be-kapa-veb-servera.html"
+                       rel="bookmark"
+                       title="Permalink to Мой "велосипед" для бэкапа веб-сервера">
+                        Мой "велосипед" для бэкапа веб-сервера
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2014-04-29T13:45:00+04:00"> Вт. 29 Апрель 2014</time>
+    </span>
+
+
+
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>Мне было лениво было разбираться с специальным софтом для бэкапа типа
+backula, amanda и т.д., и я написал этот небольшой bash-скрипт,
+незатейливо названный мною "packub", для инкрементального бэкапа файлов
+и баз данных сайтов, созданных в ISPConfig 3, в дополнение к имеющейся
+системе бэкапа этой панели управления.  Конечно, данный скрипт может
+быть настроен для бэкапа сайтов созданных с помощью других панелей, или
+вовсе без них. Единственным условием является однообразие структуры
+директорий каждого сайта. То есть, все сайты находятся, например, в
+/var/www, для каждого сайта создана поддиректория вида example.com,
+файлы сайта в поддиректории example.com/web. Но, даже если это и не так,
+то этого можно легко добиться с помощью симлинков)<br />
+<!--more--></p>
+<p>В своей работе скрипт использует утилиту rdiff-backup для формирования
+собственно инкрементальных бэкапов. И, по-сути, данный скрипт является
+оболочкой на ним, заставляя обрабатывать директории, указанные нами для
+бэкапа, а также делая дампы баз данных.</p>
+<p>Итак, вот такой вот код, его актуальная версия также лежит здесь
+<a href="https://github.com/svfat/packub">https://github.com/svfat/packub</a>:</p>
+<p>~~~~ {lang="sh"}</p>
+<h1>!/bin/bash</h1>
+<h1></h1>
+<h1>packub - bash script for backing up websites and databases</h1>
+<h1>Author: Stanislav Fateev, 2014</h1>
+<h1>Email: fateevstas@yandex.ru</h1>
+<h1>WWW: svfat.ru</h1>
+<h1></h1>
+<h1>requires bash version&gt;=4 and rdiff-backup to run</h1>
+<h1>strongly recommended to run with superuser rights</h1>
+<h1>mysql user credentials</h1>
+<p>DBLOGIN="root"
+DBPASSWORD="<strong><em>*</em></strong><strong><em>*</em></strong>****"</p>
+<h1>directories (don't forget about slashes)</h1>
+<p>BACKUP_TO="/home/user/backup/"
+DIR_PREFIX="/var/www/"
+DIR_POSTFIX="/web/"</p>
+<h1>declaring bash associative array as key:value pairs 'site':'database'</h1>
+<p>declare -A aa</p>
+<h1>edit this</h1>
+<p>aa['yandex.ru']='yandex_database'
+aa['google.com']='db_google'</p>
+<h1>end of declaration</h1>
+<h1>test enviroment</h1>
+<p>if [ ! ${BASH_VERSION%%[^0-9]*} -ge 4 ];
+then
+echo &gt;&amp;2 "I require bash version&gt;=4 but it's not installed. Aborting."
+exit 1
+fi</p>
+<p>command -v rdiff-backup &gt;/dev/null 2&gt;&amp;1 || { echo &gt;&amp;2 "I require rdiff-backup but it's not installed. Aborting."; exit 1; }</p>
+<h1>check if backup directory is exists</h1>
+<p>if [ ! -d "$BACKUP_TO" ]; then
+mkdir $BACKUP_TO
+echo "Created directory $BACKUP_TO"
+fi</p>
+<p>for site in "${!aa[@]}"
+do
+OUTPUT_DIR=$BACKUP_TO$site
+INPUT_DIR=$DIR_PREFIX$site$DIR_POSTFIX
+LOGFILE=$OUTPUT_DIR/$site.log</p>
+<h1>check if directory we want to backup is exists</h1>
+<p>if [ -d "$INPUT_DIR" ]; then</p>
+<h1>check if output directory is exists - if not, create it</h1>
+<p>if [ ! -d "$OUTPUT_DIR" ]; then
+mkdir $OUTPUT_DIR
+echo "Created directory $OUTPUT_DIR" | tee -a $LOGFILE
+fi</p>
+<h1>make incremental backup and log</h1>
+<p>echo $'\n\n' &gt;&gt; $LOGFILE
+echo "Starting backup for $site. Wait please." | tee -a $LOGFILE
+database=${aa[$site]}
+databasefile=$INPUT_DIR$database.sql
+echo "Dumping database in $databasefile" | tee -a $LOGFILE
+mysqldump -u$DBLOGIN -p$DBPASSWORD $database -v --single-transaction 2&gt;&amp;1 1&gt;$databasefile | tee -a $LOGFILE
+rdiff-backup --print-statistics $INPUT_DIR $OUTPUT_DIR$DIR_POSTFIX 2&gt;&amp;1 | tee -a $LOGFILE
+else</p>
+<h1>no input directory</h1>
+<p>echo "Directory $INPUT_DIR not found. Skipping."
+fi
+done
+~~~~</p>
+<p>Для правильной работы, замените пароль к руту mysql в переменной
+DBPASSWORD, имена директорий в переменных BACKUP_TO, DIR_PREFIX,
+DIR_POSTFIX, и настройте массив aa добавив строки вида
+aa['example.com']='db_example', где example.com имя директории где
+находятся файлы сайта, то есть, то что между DIR_PREFIX и DIR_POSTFIX,
+а db_example - имя используемой базы данных. В моей системе BACKUP_TO
+настроен на папку дропбокса - таким образом бэкапы автоматически
+заливаются в облако.</p>
+<p>Устанавливаем <a href="http://www.nongnu.org/rdiff-backup/">rdiff-backup</a> любым
+способом, подходящим для вашей системы.<br />
+Кидаем этот скрипт например в \~/bin/packub.sh (Помните, что в нем в
+открытом виде храниться пароль от рута mysql, и следует владельцем файла
+сделать пользователя root, поставив затем права доступа типа 700)</p>
+<p>После запуска, если все пройдет нормально, должны создаться необходимые
+директории в которые забэкапятся файлы с базами. Также в каждой
+директории должен быть создан log-файл с кратким отчетом.</p>
+<p>Я засунул этот скрипт в cron, и как я уже указал выше, настроил его на
+папку дропбокса. Теперь в мой дропбокс еженощно валятся инкрементальные
+бэкапы, успокаивая мою нервную систему.</p>
+<p>Возможо кому-нибудь мои наработки пригодятся, буду рад комментариям,
+форкам и pull-реквестам.</p>
+            </div>
+            <!-- /.entry-content -->
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3 well well-sm" id="sidebar">
+
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+
+
+
+                <li class="list-group-item"><a href="/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                    <ul class="list-group " id="tags">
+                        <li class="list-group-item tag-4">
+                            <a href="/tag/honda.html">
+                                honda
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="/tag/diy.html">
+                                diy
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="/tag/zamok.html">
+                                замок
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="/tag/remont.html">
+                                ремонт
+                            </a>
+                        </li>
+                    </ul>
+                </li>    
+    <li class="list-group-item"><h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+      <ul class="list-group" id="links">
+        <li class="list-group-item">
+            <a href="https://github.com/svfat/" target="_blank">
+                Мой аккаунт на GitHub
+            </a>
+        </li>
+      </ul>
+    </li>
+
+        </ul>
+    </section>
+
+</aside>        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2014 Stanislav Fateev
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+</body>
+</html>
