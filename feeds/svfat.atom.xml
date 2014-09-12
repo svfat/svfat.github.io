@@ -142,67 +142,77 @@ backula, amanda и т.д., и я написал этот небольшой bash
 бэкапа, а также делая дампы баз данных.&lt;/p&gt;
 &lt;p&gt;Итак, вот такой вот код, его актуальная версия также лежит здесь
 &lt;a href="https://github.com/svfat/packub"&gt;https://github.com/svfat/packub&lt;/a&gt;:&lt;/p&gt;
-&lt;p&gt;~~~~ {lang="sh"}&lt;/p&gt;
-&lt;h1&gt;!/bin/bash&lt;/h1&gt;
-&lt;h1&gt;&lt;/h1&gt;
-&lt;h1&gt;packub - bash script for backing up websites and databases&lt;/h1&gt;
-&lt;h1&gt;Author: Stanislav Fateev, 2014&lt;/h1&gt;
-&lt;h1&gt;Email: fateevstas@yandex.ru&lt;/h1&gt;
-&lt;h1&gt;WWW: svfat.ru&lt;/h1&gt;
-&lt;h1&gt;&lt;/h1&gt;
-&lt;h1&gt;requires bash version&amp;gt;=4 and rdiff-backup to run&lt;/h1&gt;
-&lt;h1&gt;strongly recommended to run with superuser rights&lt;/h1&gt;
-&lt;h1&gt;mysql user credentials&lt;/h1&gt;
-&lt;p&gt;DBLOGIN="root"
-DBPASSWORD="&lt;strong&gt;&lt;em&gt;*&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;*&lt;/em&gt;&lt;/strong&gt;****"&lt;/p&gt;
-&lt;h1&gt;directories (don't forget about slashes)&lt;/h1&gt;
-&lt;p&gt;BACKUP_TO="/home/user/backup/"
-DIR_PREFIX="/var/www/"
-DIR_POSTFIX="/web/"&lt;/p&gt;
-&lt;h1&gt;declaring bash associative array as key:value pairs 'site':'database'&lt;/h1&gt;
-&lt;p&gt;declare -A aa&lt;/p&gt;
-&lt;h1&gt;edit this&lt;/h1&gt;
-&lt;p&gt;aa['yandex.ru']='yandex_database'
-aa['google.com']='db_google'&lt;/p&gt;
-&lt;h1&gt;end of declaration&lt;/h1&gt;
-&lt;h1&gt;test enviroment&lt;/h1&gt;
-&lt;p&gt;if [ ! ${BASH_VERSION%%[^0-9]*} -ge 4 ];
-then
-echo &amp;gt;&amp;amp;2 "I require bash version&amp;gt;=4 but it's not installed. Aborting."
-exit 1
-fi&lt;/p&gt;
-&lt;p&gt;command -v rdiff-backup &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 || { echo &amp;gt;&amp;amp;2 "I require rdiff-backup but it's not installed. Aborting."; exit 1; }&lt;/p&gt;
-&lt;h1&gt;check if backup directory is exists&lt;/h1&gt;
-&lt;p&gt;if [ ! -d "$BACKUP_TO" ]; then
-mkdir $BACKUP_TO
-echo "Created directory $BACKUP_TO"
-fi&lt;/p&gt;
-&lt;p&gt;for site in "${!aa[@]}"
-do
-OUTPUT_DIR=$BACKUP_TO$site
-INPUT_DIR=$DIR_PREFIX$site$DIR_POSTFIX
-LOGFILE=$OUTPUT_DIR/$site.log&lt;/p&gt;
-&lt;h1&gt;check if directory we want to backup is exists&lt;/h1&gt;
-&lt;p&gt;if [ -d "$INPUT_DIR" ]; then&lt;/p&gt;
-&lt;h1&gt;check if output directory is exists - if not, create it&lt;/h1&gt;
-&lt;p&gt;if [ ! -d "$OUTPUT_DIR" ]; then
-mkdir $OUTPUT_DIR
-echo "Created directory $OUTPUT_DIR" | tee -a $LOGFILE
-fi&lt;/p&gt;
-&lt;h1&gt;make incremental backup and log&lt;/h1&gt;
-&lt;p&gt;echo $'\n\n' &amp;gt;&amp;gt; $LOGFILE
-echo "Starting backup for $site. Wait please." | tee -a $LOGFILE
-database=${aa[$site]}
-databasefile=$INPUT_DIR$database.sql
-echo "Dumping database in $databasefile" | tee -a $LOGFILE
-mysqldump -u$DBLOGIN -p$DBPASSWORD $database -v --single-transaction 2&amp;gt;&amp;amp;1 1&amp;gt;$databasefile | tee -a $LOGFILE
-rdiff-backup --print-statistics $INPUT_DIR $OUTPUT_DIR$DIR_POSTFIX 2&amp;gt;&amp;amp;1 | tee -a $LOGFILE
-else&lt;/p&gt;
-&lt;h1&gt;no input directory&lt;/h1&gt;
-&lt;p&gt;echo "Directory $INPUT_DIR not found. Skipping."
-fi
-done
-~~~~&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;#!/bin/bash&lt;/span&gt;
+&lt;span class="c"&gt;#&lt;/span&gt;
+&lt;span class="c"&gt;# packub - bash script for backing up websites and databases&lt;/span&gt;
+&lt;span class="c"&gt;# Author: Stanislav Fateev, 2014&lt;/span&gt;
+&lt;span class="c"&gt;# Email: fateevstas@yandex.ru&lt;/span&gt;
+&lt;span class="c"&gt;# WWW: svfat.ru&lt;/span&gt;
+&lt;span class="c"&gt;#&lt;/span&gt;
+&lt;span class="c"&gt;# requires bash version&amp;gt;=4 and rdiff-backup to run&lt;/span&gt;
+&lt;span class="c"&gt;# strongly recommended to run with superuser rights&lt;/span&gt;
+
+&lt;span class="c"&gt;#mysql user credentials&lt;/span&gt;
+&lt;span class="nv"&gt;DBLOGIN&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;root&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;DBPASSWORD&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;******************&amp;quot;&lt;/span&gt;
+
+&lt;span class="c"&gt;#directories (don&amp;#39;t forget about slashes)&lt;/span&gt;
+&lt;span class="nv"&gt;BACKUP_TO&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/home/user/backup/&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;DIR_PREFIX&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/var/www/&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;DIR_POSTFIX&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;/web/&amp;quot;&lt;/span&gt;
+
+&lt;span class="c"&gt;#declaring bash associative array as key:value pairs &amp;#39;site&amp;#39;:&amp;#39;database&amp;#39;&lt;/span&gt;
+&lt;span class="nb"&gt;declare&lt;/span&gt; -A aa
+
+&lt;span class="c"&gt;#edit this&lt;/span&gt;
+aa&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;yandex.ru&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;]=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;yandex_database&amp;#39;&lt;/span&gt;
+aa&lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;google.com&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;]=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;db_google&amp;#39;&lt;/span&gt;
+&lt;span class="c"&gt;# end of declaration&lt;/span&gt;
+
+&lt;span class="c"&gt;# test enviroment&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; ! &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;BASH_VERSION&lt;/span&gt;&lt;span class="p"&gt;%%[^0-9]*&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt; -ge 4 &lt;span class="o"&gt;]&lt;/span&gt;;
+&lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt; &amp;gt;&amp;amp;2 &lt;span class="s2"&gt;&amp;quot;I require bash version&amp;gt;=4 but it&amp;#39;s not installed. Aborting.&amp;quot;&lt;/span&gt;
+&lt;span class="nb"&gt;exit &lt;/span&gt;1
+&lt;span class="k"&gt;fi&lt;/span&gt;
+
+&lt;span class="nb"&gt;command&lt;/span&gt; -v rdiff-backup &amp;gt;/dev/null 2&amp;gt;&amp;amp;1 &lt;span class="o"&gt;||&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt; &lt;span class="nb"&gt;echo&lt;/span&gt; &amp;gt;&amp;amp;2 &lt;span class="s2"&gt;&amp;quot;I require rdiff-backup but it&amp;#39;s not installed. Aborting.&amp;quot;&lt;/span&gt;; &lt;span class="nb"&gt;exit &lt;/span&gt;1; &lt;span class="o"&gt;}&lt;/span&gt;
+
+&lt;span class="c"&gt;#check if backup directory is exists&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; ! -d &lt;span class="s2"&gt;&amp;quot;$BACKUP_TO&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;; &lt;span class="k"&gt;then&lt;/span&gt;
+mkdir &lt;span class="nv"&gt;$BACKUP_TO&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Created directory $BACKUP_TO&amp;quot;&lt;/span&gt;
+&lt;span class="k"&gt;fi&lt;/span&gt;
+
+&lt;span class="k"&gt;for &lt;/span&gt;site in &lt;span class="s2"&gt;&amp;quot;${!aa[@]}&amp;quot;&lt;/span&gt;
+&lt;span class="k"&gt;do&lt;/span&gt;
+&lt;span class="nv"&gt;OUTPUT_DIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$BACKUP_TO$site&lt;/span&gt;
+&lt;span class="nv"&gt;INPUT_DIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$DIR_PREFIX$site$DIR_POSTFIX&lt;/span&gt;
+&lt;span class="nv"&gt;LOGFILE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$OUTPUT_DIR&lt;/span&gt;/&lt;span class="nv"&gt;$site&lt;/span&gt;.log
+&lt;span class="c"&gt;# check if directory we want to backup is exists&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -d &lt;span class="s2"&gt;&amp;quot;$INPUT_DIR&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;; &lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="c"&gt;# check if output directory is exists - if not, create it&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; ! -d &lt;span class="s2"&gt;&amp;quot;$OUTPUT_DIR&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;; &lt;span class="k"&gt;then&lt;/span&gt;
+mkdir &lt;span class="nv"&gt;$OUTPUT_DIR&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Created directory $OUTPUT_DIR&amp;quot;&lt;/span&gt; | tee -a &lt;span class="nv"&gt;$LOGFILE&lt;/span&gt;
+&lt;span class="k"&gt;fi&lt;/span&gt;
+
+&lt;span class="c"&gt;#make incremental backup and log&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s1"&gt;$&amp;#39;\n\n&amp;#39;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span class="nv"&gt;$LOGFILE&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Starting backup for $site. Wait please.&amp;quot;&lt;/span&gt; | tee -a &lt;span class="nv"&gt;$LOGFILE&lt;/span&gt;
+&lt;span class="nv"&gt;database&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;aa&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nv"&gt;$site&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt;
+&lt;span class="nv"&gt;databasefile&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$INPUT_DIR$database&lt;/span&gt;.sql
+&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Dumping database in $databasefile&amp;quot;&lt;/span&gt; | tee -a &lt;span class="nv"&gt;$LOGFILE&lt;/span&gt;
+mysqldump -u&lt;span class="nv"&gt;$DBLOGIN&lt;/span&gt; -p&lt;span class="nv"&gt;$DBPASSWORD&lt;/span&gt; &lt;span class="nv"&gt;$database&lt;/span&gt; -v --single-transaction 2&amp;gt;&amp;amp;1 1&amp;gt;&lt;span class="nv"&gt;$databasefile&lt;/span&gt; | tee -a &lt;span class="nv"&gt;$LOGFILE&lt;/span&gt;
+rdiff-backup --print-statistics &lt;span class="nv"&gt;$INPUT_DIR&lt;/span&gt; &lt;span class="nv"&gt;$OUTPUT_DIR$DIR_POSTFIX&lt;/span&gt; 2&amp;gt;&amp;amp;1 | tee -a &lt;span class="nv"&gt;$LOGFILE&lt;/span&gt;
+&lt;span class="k"&gt;else&lt;/span&gt;
+&lt;span class="c"&gt;# no input directory&lt;/span&gt;
+&lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Directory $INPUT_DIR not found. Skipping.&amp;quot;&lt;/span&gt;
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="k"&gt;done&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
 &lt;p&gt;Для правильной работы, замените пароль к руту mysql в переменной
 DBPASSWORD, имена директорий в переменных BACKUP_TO, DIR_PREFIX,
 DIR_POSTFIX, и настройте массив aa добавив строки вида

@@ -107,67 +107,77 @@ backula, amanda и т.д., и я написал этот небольшой bash
 бэкапа, а также делая дампы баз данных.</p>
 <p>Итак, вот такой вот код, его актуальная версия также лежит здесь
 <a href="https://github.com/svfat/packub">https://github.com/svfat/packub</a>:</p>
-<p>~~~~ {lang="sh"}</p>
-<h1>!/bin/bash</h1>
-<h1></h1>
-<h1>packub - bash script for backing up websites and databases</h1>
-<h1>Author: Stanislav Fateev, 2014</h1>
-<h1>Email: fateevstas@yandex.ru</h1>
-<h1>WWW: svfat.ru</h1>
-<h1></h1>
-<h1>requires bash version&gt;=4 and rdiff-backup to run</h1>
-<h1>strongly recommended to run with superuser rights</h1>
-<h1>mysql user credentials</h1>
-<p>DBLOGIN="root"
-DBPASSWORD="<strong><em>*</em></strong><strong><em>*</em></strong>****"</p>
-<h1>directories (don't forget about slashes)</h1>
-<p>BACKUP_TO="/home/user/backup/"
-DIR_PREFIX="/var/www/"
-DIR_POSTFIX="/web/"</p>
-<h1>declaring bash associative array as key:value pairs 'site':'database'</h1>
-<p>declare -A aa</p>
-<h1>edit this</h1>
-<p>aa['yandex.ru']='yandex_database'
-aa['google.com']='db_google'</p>
-<h1>end of declaration</h1>
-<h1>test enviroment</h1>
-<p>if [ ! ${BASH_VERSION%%[^0-9]*} -ge 4 ];
-then
-echo &gt;&amp;2 "I require bash version&gt;=4 but it's not installed. Aborting."
-exit 1
-fi</p>
-<p>command -v rdiff-backup &gt;/dev/null 2&gt;&amp;1 || { echo &gt;&amp;2 "I require rdiff-backup but it's not installed. Aborting."; exit 1; }</p>
-<h1>check if backup directory is exists</h1>
-<p>if [ ! -d "$BACKUP_TO" ]; then
-mkdir $BACKUP_TO
-echo "Created directory $BACKUP_TO"
-fi</p>
-<p>for site in "${!aa[@]}"
-do
-OUTPUT_DIR=$BACKUP_TO$site
-INPUT_DIR=$DIR_PREFIX$site$DIR_POSTFIX
-LOGFILE=$OUTPUT_DIR/$site.log</p>
-<h1>check if directory we want to backup is exists</h1>
-<p>if [ -d "$INPUT_DIR" ]; then</p>
-<h1>check if output directory is exists - if not, create it</h1>
-<p>if [ ! -d "$OUTPUT_DIR" ]; then
-mkdir $OUTPUT_DIR
-echo "Created directory $OUTPUT_DIR" | tee -a $LOGFILE
-fi</p>
-<h1>make incremental backup and log</h1>
-<p>echo $'\n\n' &gt;&gt; $LOGFILE
-echo "Starting backup for $site. Wait please." | tee -a $LOGFILE
-database=${aa[$site]}
-databasefile=$INPUT_DIR$database.sql
-echo "Dumping database in $databasefile" | tee -a $LOGFILE
-mysqldump -u$DBLOGIN -p$DBPASSWORD $database -v --single-transaction 2&gt;&amp;1 1&gt;$databasefile | tee -a $LOGFILE
-rdiff-backup --print-statistics $INPUT_DIR $OUTPUT_DIR$DIR_POSTFIX 2&gt;&amp;1 | tee -a $LOGFILE
-else</p>
-<h1>no input directory</h1>
-<p>echo "Directory $INPUT_DIR not found. Skipping."
-fi
-done
-~~~~</p>
+<div class="highlight"><pre><span class="c">#!/bin/bash</span>
+<span class="c">#</span>
+<span class="c"># packub - bash script for backing up websites and databases</span>
+<span class="c"># Author: Stanislav Fateev, 2014</span>
+<span class="c"># Email: fateevstas@yandex.ru</span>
+<span class="c"># WWW: svfat.ru</span>
+<span class="c">#</span>
+<span class="c"># requires bash version&gt;=4 and rdiff-backup to run</span>
+<span class="c"># strongly recommended to run with superuser rights</span>
+
+<span class="c">#mysql user credentials</span>
+<span class="nv">DBLOGIN</span><span class="o">=</span><span class="s2">&quot;root&quot;</span>
+<span class="nv">DBPASSWORD</span><span class="o">=</span><span class="s2">&quot;******************&quot;</span>
+
+<span class="c">#directories (don&#39;t forget about slashes)</span>
+<span class="nv">BACKUP_TO</span><span class="o">=</span><span class="s2">&quot;/home/user/backup/&quot;</span>
+<span class="nv">DIR_PREFIX</span><span class="o">=</span><span class="s2">&quot;/var/www/&quot;</span>
+<span class="nv">DIR_POSTFIX</span><span class="o">=</span><span class="s2">&quot;/web/&quot;</span>
+
+<span class="c">#declaring bash associative array as key:value pairs &#39;site&#39;:&#39;database&#39;</span>
+<span class="nb">declare</span> -A aa
+
+<span class="c">#edit this</span>
+aa<span class="o">[</span><span class="s1">&#39;yandex.ru&#39;</span><span class="o">]=</span><span class="s1">&#39;yandex_database&#39;</span>
+aa<span class="o">[</span><span class="s1">&#39;google.com&#39;</span><span class="o">]=</span><span class="s1">&#39;db_google&#39;</span>
+<span class="c"># end of declaration</span>
+
+<span class="c"># test enviroment</span>
+<span class="k">if</span> <span class="o">[</span> ! <span class="k">${</span><span class="nv">BASH_VERSION</span><span class="p">%%[^0-9]*</span><span class="k">}</span> -ge 4 <span class="o">]</span>;
+<span class="k">then</span>
+<span class="nb">echo</span> &gt;&amp;2 <span class="s2">&quot;I require bash version&gt;=4 but it&#39;s not installed. Aborting.&quot;</span>
+<span class="nb">exit </span>1
+<span class="k">fi</span>
+
+<span class="nb">command</span> -v rdiff-backup &gt;/dev/null 2&gt;&amp;1 <span class="o">||</span> <span class="o">{</span> <span class="nb">echo</span> &gt;&amp;2 <span class="s2">&quot;I require rdiff-backup but it&#39;s not installed. Aborting.&quot;</span>; <span class="nb">exit </span>1; <span class="o">}</span>
+
+<span class="c">#check if backup directory is exists</span>
+<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;$BACKUP_TO&quot;</span> <span class="o">]</span>; <span class="k">then</span>
+mkdir <span class="nv">$BACKUP_TO</span>
+<span class="nb">echo</span> <span class="s2">&quot;Created directory $BACKUP_TO&quot;</span>
+<span class="k">fi</span>
+
+<span class="k">for </span>site in <span class="s2">&quot;${!aa[@]}&quot;</span>
+<span class="k">do</span>
+<span class="nv">OUTPUT_DIR</span><span class="o">=</span><span class="nv">$BACKUP_TO$site</span>
+<span class="nv">INPUT_DIR</span><span class="o">=</span><span class="nv">$DIR_PREFIX$site$DIR_POSTFIX</span>
+<span class="nv">LOGFILE</span><span class="o">=</span><span class="nv">$OUTPUT_DIR</span>/<span class="nv">$site</span>.log
+<span class="c"># check if directory we want to backup is exists</span>
+<span class="k">if</span> <span class="o">[</span> -d <span class="s2">&quot;$INPUT_DIR&quot;</span> <span class="o">]</span>; <span class="k">then</span>
+<span class="c"># check if output directory is exists - if not, create it</span>
+<span class="k">if</span> <span class="o">[</span> ! -d <span class="s2">&quot;$OUTPUT_DIR&quot;</span> <span class="o">]</span>; <span class="k">then</span>
+mkdir <span class="nv">$OUTPUT_DIR</span>
+<span class="nb">echo</span> <span class="s2">&quot;Created directory $OUTPUT_DIR&quot;</span> | tee -a <span class="nv">$LOGFILE</span>
+<span class="k">fi</span>
+
+<span class="c">#make incremental backup and log</span>
+<span class="nb">echo</span> <span class="s1">$&#39;\n\n&#39;</span> &gt;&gt; <span class="nv">$LOGFILE</span>
+<span class="nb">echo</span> <span class="s2">&quot;Starting backup for $site. Wait please.&quot;</span> | tee -a <span class="nv">$LOGFILE</span>
+<span class="nv">database</span><span class="o">=</span><span class="k">${</span><span class="nv">aa</span><span class="p">[</span><span class="nv">$site</span><span class="p">]</span><span class="k">}</span>
+<span class="nv">databasefile</span><span class="o">=</span><span class="nv">$INPUT_DIR$database</span>.sql
+<span class="nb">echo</span> <span class="s2">&quot;Dumping database in $databasefile&quot;</span> | tee -a <span class="nv">$LOGFILE</span>
+mysqldump -u<span class="nv">$DBLOGIN</span> -p<span class="nv">$DBPASSWORD</span> <span class="nv">$database</span> -v --single-transaction 2&gt;&amp;1 1&gt;<span class="nv">$databasefile</span> | tee -a <span class="nv">$LOGFILE</span>
+rdiff-backup --print-statistics <span class="nv">$INPUT_DIR</span> <span class="nv">$OUTPUT_DIR$DIR_POSTFIX</span> 2&gt;&amp;1 | tee -a <span class="nv">$LOGFILE</span>
+<span class="k">else</span>
+<span class="c"># no input directory</span>
+<span class="nb">echo</span> <span class="s2">&quot;Directory $INPUT_DIR not found. Skipping.&quot;</span>
+<span class="k">fi</span>
+<span class="k">done</span>
+</pre></div>
+
+
 <p>Для правильной работы, замените пароль к руту mysql в переменной
 DBPASSWORD, имена директорий в переменных BACKUP_TO, DIR_PREFIX,
 DIR_POSTFIX, и настройте массив aa добавив строки вида
@@ -206,11 +216,6 @@ aa['example.com']='db_example', где example.com имя директории �
                 <li class="list-group-item"><a href="/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
                     <ul class="list-group " id="tags">
                         <li class="list-group-item tag-4">
-                            <a href="/tag/diy.html">
-                                diy
-                            </a>
-                        </li>
-                        <li class="list-group-item tag-4">
                             <a href="/tag/remont.html">
                                 ремонт
                             </a>
@@ -223,6 +228,11 @@ aa['example.com']='db_example', где example.com имя директории �
                         <li class="list-group-item tag-4">
                             <a href="/tag/honda.html">
                                 honda
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="/tag/diy.html">
+                                diy
                             </a>
                         </li>
                     </ul>
